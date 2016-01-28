@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/preference_title">
+        <EditTextPreference
+            android:key="max_rate_difference"
+            android:title="@string/edittext_title"
+            android:summary="@string/edittext_summary"
+            android:inputType="number"
+            android:maxLength="2"
+            android:hint="5"/>
+    </PreferenceCategory>
+</PreferenceScreen>

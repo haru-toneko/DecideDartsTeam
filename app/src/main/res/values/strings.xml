@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">DecideDartsTeams</string>
+    <string name="opt_menu">Config</string>
+
+    <string name="preference_title">Config</string>
+    <string name="edittext_title">チーム間の最大レート差</string>
+    <string name="edittext_summary">チーム間レート差がこの数値以下になります</string>
+</resources>
