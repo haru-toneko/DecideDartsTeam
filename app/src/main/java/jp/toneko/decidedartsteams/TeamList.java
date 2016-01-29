@@ -11,31 +11,66 @@ public class TeamList {
 
     private ArrayList<Team> teamList;
 
+    /**
+     * TeamListのインスタンスを取得 (シングルトン)
+     * @return
+     */
     public static TeamList getInstance() {
         return instance;
     }
 
+    /**
+     * コンストラクタ
+     */
     private TeamList() {
         this.teamList = new ArrayList<Team>();
     }
 
+    /**
+     * Teamを追加
+     * @param team
+     */
     public void add(Team team) {
         this.teamList.add(team);
     }
 
+    /**
+     * Teamを取得
+     * @param index
+     * @return
+     */
     public Team getTeam(int index) {
         return this.teamList.get(index);
     }
 
+    /**
+     * チーム数を取得
+     * @return
+     */
     public int getNumOfTeams() {
         return this.teamList.size();
     }
 
+    /**
+     * TeamListを初期化
+     */
     public void clear() {
         this.teamList.clear();
     }
 
+    /**
+     * 最もRate合計が高いTeamを取得
+     * @return
+     */
     public Team getMostRateTeam() {
+        return getTeam(getMostRateTeamIndex());
+    }
+
+    /**
+     * 最もRate合計が高いTeamのインデックスを取得
+     * @return
+     */
+    public int getMostRateTeamIndex() {
         int mostTeamIndex = 0;
         int totalRate = getTeam(0).getTotalRate();
         for (int i = 1; i < getNumOfTeams(); i++) {
@@ -45,22 +80,21 @@ public class TeamList {
                 totalRate = tempRate;
             }
         }
-        return getTeam(mostTeamIndex);
+        return mostTeamIndex;
     }
 
+    /**
+     * 最もRate合計が低いTeamを取得
+     * @return
+     */
     public Team getLeastRateTeam() {
-        int leastTeamIndex = 0;
-        int totalRate = getTeam(0).getTotalRate();
-        for (int i = 1; i < getNumOfTeams(); i++) {
-            int tempRate = getTeam(i).getTotalRate();
-            if (tempRate < totalRate) {
-                leastTeamIndex = i;
-                totalRate = tempRate;
-            }
-        }
-        return getTeam(leastTeamIndex);
+        return getTeam(getLeastRateTeamIndex());
     }
 
+    /**
+     * 最もRate合計が低いTeamのインデックスを取得
+     * @return
+     */
     public int getLeastRateTeamIndex() {
         int leastTeamIndex = 0;
         int totalRate = getTeam(0).getTotalRate();
@@ -74,22 +108,34 @@ public class TeamList {
         return leastTeamIndex;
     }
 
-    public Team getOtherTeamOfLeastRateTeam() {
+    /**
+     * 最もRate合計が低いチームの他のチームを取得 (ランダム)
+     * @return
+     */
+    public Team getAnotherTeamOfLeastRateTeam() {
         int leastTeamIndex = getLeastRateTeamIndex();
-        ArrayList<Team> otherTeamOfLeastRateTeamIndexList = new ArrayList<Team>();
+        ArrayList<Team> anotherTeamOfLeastRateTeamIndexList = new ArrayList<Team>();
         for (int i = 0, length = getNumOfTeams(); i < length; i++) {
             if (i != leastTeamIndex) {
-                otherTeamOfLeastRateTeamIndexList.add(getTeam(i));
+                anotherTeamOfLeastRateTeamIndexList.add(getTeam(i));
             }
         }
         Random rnd = new Random();
-        return otherTeamOfLeastRateTeamIndexList.get(rnd.nextInt(otherTeamOfLeastRateTeamIndexList.size()));
+        return anotherTeamOfLeastRateTeamIndexList.get(rnd.nextInt(anotherTeamOfLeastRateTeamIndexList.size()));
     }
 
+    /**
+     * 最もRate平均が低いチームを取得
+     * @return
+     */
     public Team getLeastRateAveTeam() {
         return getTeam(getLeastRateAveTeamIndex());
     }
 
+    /**
+     * 最もRate平均が低いチームのインデックスを取得
+     * @return
+     */
     public int getLeastRateAveTeamIndex() {
         int leastTeamIndex = 0;
         float rateAverage = getTeam(0).getRateAverage();
@@ -103,18 +149,26 @@ public class TeamList {
         return leastTeamIndex;
     }
 
-    public Team getOtherTeamOfLeastRateAveTeam() {
+    /**
+     * 最もRate平均が低いチームの他のチームを取得 (ランダム)
+     * @return
+     */
+    public Team getAnotherTeamOfLeastRateAveTeam() {
         int leastTeamIndex = getLeastRateAveTeamIndex();
-        ArrayList<Team> otherTeamOfLeastRateAveTeamIndexList = new ArrayList<Team>();
+        ArrayList<Team> anotherTeamOfLeastRateAveTeamIndexList = new ArrayList<Team>();
         for (int i = 0, length = getNumOfTeams(); i < length; i++) {
             if (i != leastTeamIndex) {
-                otherTeamOfLeastRateAveTeamIndexList.add(getTeam(i));
+                anotherTeamOfLeastRateAveTeamIndexList.add(getTeam(i));
             }
         }
         Random rnd = new Random();
-        return otherTeamOfLeastRateAveTeamIndexList.get(rnd.nextInt(otherTeamOfLeastRateAveTeamIndexList.size()));
+        return anotherTeamOfLeastRateAveTeamIndexList.get(rnd.nextInt(anotherTeamOfLeastRateAveTeamIndexList.size()));
     }
 
+    /**
+     * 最もRate平均が高いチームを取得
+     * @return
+     */
     public Team getMostRateAveTeam() {
         int mostTeamIndex = 0;
         float rateAve = getTeam(0).getRateAverage();

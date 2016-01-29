@@ -4,18 +4,34 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+
 /**
  * Created by yachi-shunji on 16/01/18.
  */
 public class MemberPreferencesUtil {
-    /** SharedPreferencesファイルキー */
+    // SharedPreferencesファイルキー
     private static final String PREF_KEY = "MemberPreferencesUtil";
-    /** このクラスのインスタンス */
+    // このクラスのインスタンス
     private static MemberPreferencesUtil OUR_INSTANCE;
-    /** プリファレンス */
+    // プリファレンス
     private SharedPreferences pref;
-    /** Editor */
+    // Editor
     private SharedPreferences.Editor editor;
+
+    /** Key一覧 **/
+    // メンバー数
+    private static final String NUM_OF_MEMBERS = "num_of_members";
+    // 名前 ("name" + 0, 1, ...)
+    private static final String NAME = "name";
+    // Rate ("rate" + 0, 1, ...)
+    private static final String RATE = "rate";
+    // 最後に履歴に登録されたMemberのインデックス
+    private static final String LAST_HISTORY_INDEX = "last_history_index";
+    // 履歴の名前 ("history_name" + 0, 1, ...)
+    private static final String HISTORY_NAME = "history_name";
+    // 履歴のRate ("history_rate" + 0, 1, ...)
+    private static final String HISTORY_RATE = "history_rate";
 
     /**
      * コンストラクタ
@@ -44,10 +60,10 @@ public class MemberPreferencesUtil {
     public void loadMemberList() {
         MemberList memberList = MemberList.getInstance();
         memberList.clear();
-        int numOfMembers = pref.getInt("num_of_members", 0);
+        int numOfMembers = pref.getInt(NUM_OF_MEMBERS, 0);
         for (int i = 0; i < numOfMembers; i++) {
-            String name = pref.getString("name" + i, "");
-            int rate = pref.getInt("rate" + i, 0);
+            String name = pref.getString(NAME + i, "");
+            int rate = pref.getInt(RATE + i, 0);
             memberList.add(new Member(name, rate));
         }
     }
@@ -58,32 +74,45 @@ public class MemberPreferencesUtil {
     public void saveMemberList() {
         MemberList memberList = MemberList.getInstance();
         int numOfMembers = memberList.getNumOfMembers();
-        editor.putInt("num_of_members", numOfMembers);
+        editor.putInt(NUM_OF_MEMBERS, numOfMembers);
         for (int i = 0; i < numOfMembers; i++) {
             Member member = memberList.getMember(i);
-            editor.putString("name" + i, member.name);
-            editor.putInt("rate" + i, member.rate);
+            editor.putString(NAME + i, member.name);
+            editor.putInt(RATE + i, member.rate);
             addMemberToHistory(member);
         }
         editor.commit();
     }
 
+    /**
+     * 履歴にMemberを追加する
+     * @param member
+     */
     public void addMemberToHistory(Member member) {
-        int lastHistoryIndex = pref.getInt("last_history_index", 0);
-        editor.putString("history_name" + String.valueOf(lastHistoryIndex + 1), member.name);
-        editor.putInt("history_rate" + (lastHistoryIndex + 1), member.rate);
-        editor.putInt("last_history_index", lastHistoryIndex + 1);
+        int lastHistoryIndex = pref.getInt(LAST_HISTORY_INDEX, 0);
+        editor.putString(HISTORY_NAME + String.valueOf(lastHistoryIndex + 1), member.name);
+        editor.putInt(HISTORY_RATE + (lastHistoryIndex + 1), member.rate);
+        editor.putInt(LAST_HISTORY_INDEX, lastHistoryIndex + 1);
         editor.commit();
     }
 
-    public Member getMemberFromHistory(int index) {
-        int lastHistoryIndex = pref.getInt("last_history_index", 0);
-        String name = pref.getString("history_name" + ((lastHistoryIndex - 29) + index), "");
-        int rate = pref.getInt("history_rate" + ((lastHistoryIndex - 29) + index), 0);
-        if ("".equals(name) && rate == 0) {
-            return null;
+    /**
+     * MemberのArrayを履歴件数分取得する
+     * @param historyNumber 履歴件数
+     * @return ArrayList<Member>
+     */
+    public ArrayList<Member> getMembersFromHistory(int historyNumber) {
+        ArrayList<Member> members = new ArrayList<Member>();
+
+        int lastHistoryIndex = pref.getInt(LAST_HISTORY_INDEX, 0);
+        for (int i = 0; i < historyNumber; i++) {
+            String name = pref.getString(HISTORY_NAME + ((lastHistoryIndex - (historyNumber - 1)) + i), "");
+            int rate = pref.getInt(HISTORY_RATE + ((lastHistoryIndex - (historyNumber - 1)) + i), 0);
+            if (!"".equals(name) || rate != 0) {
+                members.add(new Member(name, rate));
+            }
         }
-        return new Member(name, rate);
+        return members;
     }
 
     /**
