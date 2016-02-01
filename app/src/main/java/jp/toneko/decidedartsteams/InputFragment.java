@@ -40,6 +40,7 @@ public class InputFragment extends Fragment implements View.OnClickListener {
 
     private int numOfTeams;
     private int numOfMembers;
+    private float maxRateAveDifference;
 
     /**
      * コンストラクタ
@@ -241,6 +242,7 @@ public class InputFragment extends Fragment implements View.OnClickListener {
     private void saveInput() {
         this.numOfTeams = Integer.parseInt(((EditText)getActivity().findViewById(R.id.num_of_teams)).getText().toString());
         this.numOfMembers = Integer.parseInt(((EditText) getActivity().findViewById(R.id.num_of_members)).getText().toString());
+        this.maxRateAveDifference = Float.parseFloat(((EditText) getActivity().findViewById(R.id.allowable_rate_ave_difference)).getText().toString());
     }
 
     /**
@@ -307,15 +309,15 @@ public class InputFragment extends Fragment implements View.OnClickListener {
         }
 
         Random rnd = new Random();
-        float maxRateAveDifference = Float.parseFloat(((EditText) getActivity().findViewById(R.id.allowable_rate_ave_difference)).getText().toString());
+
         for (int i = 0; ; i++) {
             // 最もRate平均の低いチームとその他のチームを１つ取得
-            Team leastRateTeam = teamList.getLeastRateAveTeam();
-            Team otherTeam = teamList.getAnotherTeamOfLeastRateAveTeam();
+            Team leastRateAveTeam = teamList.getLeastRateAveTeam();
+            Team anotherTeam = teamList.getAnotherTeamOfLeastRateAveTeam();
 
             // チーム間のRate平均差が設定した数値以下になるか、CHANGE_COUNT回入れ替えても駄目ならループを抜ける
             float maxRateAve = teamList.getMostRateAveTeam().getRateAverage();
-            float leastRateAve = leastRateTeam.getRateAverage();
+            float leastRateAve = leastRateAveTeam.getRateAverage();
             if ((maxRateAve - leastRateAve) <= maxRateAveDifference) {
                 break;
             }
@@ -325,16 +327,16 @@ public class InputFragment extends Fragment implements View.OnClickListener {
             }
 
             // Rate平均の最も低いチームのメンバーのインデックスをランダムで取得
-            int leastRateTeamMemberIndex = rnd.nextInt(leastRateTeam.getNumOfMembers());
+            int leastRateTeamMemberIndex = rnd.nextInt(leastRateAveTeam.getNumOfMembers());
             // Rate平均の最も低いチーム以外のチームのメンバーのインデックスをランダムで取得
-            int anotherTeamMemberIndex = rnd.nextInt(otherTeam.getNumOfMembers());
+            int anotherTeamMemberIndex = rnd.nextInt(anotherTeam.getNumOfMembers());
             // メンバー入れ替え
-            Member mostRateTeamMember = otherTeam.getMember(anotherTeamMemberIndex);
-            Member leastRateTeamMember = leastRateTeam.getMember(leastRateTeamMemberIndex);
-            otherTeam.removeMember(anotherTeamMemberIndex);
-            leastRateTeam.removeMember(leastRateTeamMemberIndex);
-            otherTeam.add(leastRateTeamMember);
-            leastRateTeam.add(mostRateTeamMember);
+            Member leastRateTeamMember = leastRateAveTeam.getMember(leastRateTeamMemberIndex);
+            Member anotherTeamMember = anotherTeam.getMember(anotherTeamMemberIndex);
+            leastRateAveTeam.removeMember(leastRateTeamMemberIndex);
+            anotherTeam.removeMember(anotherTeamMemberIndex);
+            leastRateAveTeam.add(anotherTeamMember);
+            anotherTeam.add(leastRateTeamMember);
         }
         return true;
     }
